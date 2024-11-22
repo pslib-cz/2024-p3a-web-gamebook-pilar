@@ -1,0 +1,6 @@
+@GamebookPilar.Server_HostAddress = http://localhost:5232
+
+GET {{GamebookPilar.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
