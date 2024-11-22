@@ -1,0 +1,10 @@
+{
+"SpaProxyServer": {
+"ServerUrl": "https://localhost:56754",
+"RedirectUrl": "",
+"LaunchCommand": "npm run dev",
+"WorkingDirectory": "C:\\Users\\end3r\\code\\gamebook\\GamebookPilar.Server\\..\\gamebookpilar.client",
+"MaxTimeoutInSeconds": "120",
+"KeepRunning": "false"
+}
+}

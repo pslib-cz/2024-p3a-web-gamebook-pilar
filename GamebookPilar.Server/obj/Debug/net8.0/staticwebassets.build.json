@@ -1,0 +1,24 @@
+{
+  "Version": 1,
+  "Hash": "RKO7nhF1jDOZnBBi6QcHqum+eDyfPms5MYwRIXuv/xs=",
+  "Source": "GamebookPilar.Server",
+  "BasePath": "_content/GamebookPilar.Server",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\Users\\end3r\\code\\gamebook\\gamebookpilar.client\\gamebookpilar.client.esproj",
+      "Version": 2,
+      "Source": "gamebookpilar.client",
+      "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
+    }
+  ],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
