@@ -8,7 +8,7 @@ namespace GamebookPilar.Server.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) {
             
         }
-
         public DbSet<Location> Locations { get; set; }
+        public DbSet<Background> Backgrounds { get; set; }
     }
 }

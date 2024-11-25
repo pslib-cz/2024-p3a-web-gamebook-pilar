@@ -1,24 +1,23 @@
 {
   "Version": 1,
-  "Hash": "RKO7nhF1jDOZnBBi6QcHqum+eDyfPms5MYwRIXuv/xs=",
+  "Hash": "VRqQz2trrljqcJZaJwU/IZDMMLXnVoAEG351bZCuiFc=",
   "Source": "GamebookPilar.Server",
   "BasePath": "_content/GamebookPilar.Server",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "C:\\Users\\end3r\\code\\gamebook\\gamebookpilar.client\\gamebookpilar.client.esproj",
+      "Identity": "/home/end3r/code/gamebook/gamebookpilar.client/gamebookpilar.client.esproj",
       "Version": 2,
       "Source": "gamebookpilar.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
       "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
-      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
       "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
       "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
-      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
     }
   ],
   "DiscoveryPatterns": [],
-  "Assets": [],
-  "Endpoints": []
+  "Assets": []
 }

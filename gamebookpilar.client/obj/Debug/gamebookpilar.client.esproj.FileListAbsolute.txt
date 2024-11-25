@@ -1,1 +1,2 @@
-C:\Users\end3r\code\gamebook\gamebookpilar.client\obj\Debug\gamebookpilar.client.esproj.CoreCompileInputs.cache
+C:/Users/end3r/code/gamebook/gamebookpilar.client/obj/Debug/gamebookpilar.client.esproj.CoreCompileInputs.cache
+/home/end3r/code/gamebook/gamebookpilar.client/obj/Debug/gamebookpilar.client.esproj.CoreCompileInputs.cache
