@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/end3r/code/gamebook/gamebookpilar.client/gamebookpilar.client.esproj": {}
+  },
+  "projects": {
+    "/home/end3r/code/gamebook/gamebookpilar.client/gamebookpilar.client.esproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/end3r/code/gamebook/gamebookpilar.client/gamebookpilar.client.esproj",
+        "projectName": "gamebookpilar.client",
+        "projectPath": "/home/end3r/code/gamebook/gamebookpilar.client/gamebookpilar.client.esproj",
+        "packagesPath": "/home/end3r/.nuget/packages/",
+        "outputPath": "/home/end3r/code/gamebook/gamebookpilar.client/obj/",
+        "projectStyle": "PackageReference",
+        "UsingMicrosoftNETSdk": false,
+        "configFilePaths": [
+          "/home/end3r/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0-none": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net6.0-none": {
+          "targetAlias": "net6.0"
+        }
+      }
+    }
+  }
+}
