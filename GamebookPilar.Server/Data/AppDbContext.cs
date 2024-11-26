@@ -10,5 +10,8 @@ namespace GamebookPilar.Server.Data
         }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Background> Backgrounds { get; set; }
+        public DbSet<MoveButton> MoveButtons { get; set; }
+        public DbSet<KeypadButton> KeypadButtons { get; set; }
+        public DbSet<LockButton> LockButtons { get; set; }
     }
 }
