@@ -29,9 +29,8 @@ keypad minigame - three difficulties - easy for early levels, medium for later l
 
 ## ENDINGS
 all will be cutscenes
-    1 (game over) - you die because of loss of sanity - slicing your throat, blood coming out of them, slowly collapsing on the floor (done in studio)
 
+    1 (game over) - you die because of loss of sanity - slicing your throat, blood coming out of them, slowly collapsing on the floor (done in studio)
     2 (easy ending) - you sucessfully do the ritual - the dark leaves, you are in the light (in snow, scene done twice, at night and at day)
-    
     3 (hard ending) - you find the medical report - you realize that everything that is happening is caused by your mental illness (recorded at home i think?)
         - you need to piece together all parts of the medical report, each hidden behind a hard keypad minigame
