@@ -23,12 +23,12 @@ a horror game about the daylight vanishing from the world
 
 ## MINIGAMES
 
-## keypad minigame - three difficulties - easy for early levels, medium for later levels, hard for reality ending
+keypad minigame - three difficulties - easy for early levels, medium for later levels, hard for reality ending
 	- basically wordle but with numbers, easy will be 4 numbers, medium 5, hard 6/7
 
 ## ENDINGS
 all will be cutscenes
-1 (game over) - you die because of loss of sanity - slicing your throat, blood coming out of them, slowly collapsing on the floor (done in studio)
-2 (easy ending) - you sucessfully do the ritual - the dark leaves, you are in the light (in snow, scene done twice, at night and at day)
-3 (hard ending) - you find the medical report - you realize that everything that is happening is caused by your mental illness (recorded at home i think?)
-	- you need to piece together all parts of the medical report, each hidden behind a hard keypad minigame
+    1 (game over) - you die because of loss of sanity - slicing your throat, blood coming out of them, slowly collapsing on the floor (done in studio)
+    2 (easy ending) - you sucessfully do the ritual - the dark leaves, you are in the light (in snow, scene done twice, at night and at day)
+    3 (hard ending) - you find the medical report - you realize that everything that is happening is caused by your mental illness (recorded at home i think?)
+        - you need to piece together all parts of the medical report, each hidden behind a hard keypad minigame
