@@ -1,6 +1,10 @@
 # nyctophobia
 a horror game about the daylight vanishing from the world
 
+## FIGMA
+
+https://www.figma.com/design/mZp2r9UydWcrv0hrhusmAT/Untitled?node-id=0-1
+
 ## STORY
     - you play as alex, who suffers from nyctophobia (phobia of the dark)
 	- intro cutscene: "the world has been thrown into darkness for several weeks now. i ran away from home, but i need answers. i need light." mc enters an apartment building
