@@ -3,7 +3,7 @@ a horror game about the daylight vanishing from the world
 
 ## FIGMA
 
-https://www.figma.com/design/mZp2r9UydWcrv0hrhusmAT/Untitled?node-id=0-1
+https://www.figma.com/design/mZp2r9UydWcrv0hrhusmAT
 
 ## STORY
     - you play as alex, who suffers from nyctophobia (phobia of the dark)
