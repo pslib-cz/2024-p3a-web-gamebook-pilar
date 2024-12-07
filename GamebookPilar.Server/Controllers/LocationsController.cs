@@ -32,7 +32,9 @@ namespace GamebookPilar.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Location>> GetLocation(int id)
         {
-            var location = await _context.Locations.FindAsync(id);
+            var location = await _context.Locations
+                .Include(l => l.Backgrounds)
+                .FirstOrDefaultAsync(l => l.LocationId == id);
 
             if (location == null)
             {

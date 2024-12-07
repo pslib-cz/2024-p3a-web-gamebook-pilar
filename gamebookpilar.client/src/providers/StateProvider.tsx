@@ -10,18 +10,12 @@ interface GameState {
     cigarettesTaken: string, // cigarettes will be finite and set for each room, it will be held like this: 10101010110
     candlesTaken: string, // -||-
     pagesTaken: string, // -||-
-}
-
-interface Inventory {
-    cigarettes: number, // amount of cigarettes on the player (-1 to 5)
-    candles: number, // amount of candles on the player (-1 to 5)
-    pages: number // amount of pages on the player (-1 to 5)
+    keysTaken: string // -||-
 }
 
 interface State {
     player: PlayerState,
-    game: GameState,
-    inventory: Inventory
+    game: GameState
 }
 
 // encodes a number into a binary string, filling in remaining 0's
@@ -47,9 +41,7 @@ function stateToBin(state: State): string {
     rtn = rtn + state.game.cigarettesTaken; // 10 bits
     rtn = rtn + state.game.candlesTaken; // 5 bits
     rtn = rtn + state.game.pagesTaken; // 3 bits
-    rtn = rtn + numToBin(state.inventory.cigarettes + 1, 3);
-    rtn = rtn + numToBin(state.inventory.candles + 1, 3);
-    rtn = rtn + numToBin(state.inventory.pages + 1, 3);
+    rtn = rtn + state.game.keysTaken; // 9 bits
     return rtn;
 }
 
@@ -75,14 +67,7 @@ function binToState(bin: string): State {
     const pagesTaken = bin.slice(index, index + 3);
     index += 3;
 
-    const cigarettes = binToNum(bin.slice(index, index + 3)) - 1;
-    index += 3;
-
-    const candles = binToNum(bin.slice(index, index + 3)) - 1;
-    index += 3;
-
-    const pages = binToNum(bin.slice(index, index + 3)) - 1;
-    index += 3;
+    const keysTaken = bin.slice(index, index + 9);
 
     return {
         player: {
@@ -94,11 +79,7 @@ function binToState(bin: string): State {
             cigarettesTaken: cigarettesTaken,
             candlesTaken: candlesTaken,
             pagesTaken: pagesTaken,
-        },
-        inventory: {
-            cigarettes: cigarettes,
-            candles: candles,
-            pages: pages,
+            keysTaken: keysTaken
         },
     };
 }
@@ -150,7 +131,7 @@ function decode(text: string): State {
 }
 
 function updateGameKey(newString: string | undefined) : string {
-    let gameKey: string = "AAUAAABJ+41";
+    let gameKey: string = "AAUAAAAA+41";
     let storedKey = localStorage.getItem("gameKey");
     if (newString) {
         if (newString != "reset") {
@@ -166,7 +147,7 @@ function updateGameKey(newString: string | undefined) : string {
 interface TStateContext {
     updateGameKey: (k: string | undefined) => string,
     encode: (s: State) => string,
-    decode: (s: string) => State 
+    decode: (s: string) => State
 }
 
 export const StateContext = createContext<TStateContext>(
@@ -184,13 +165,8 @@ export const StateContext = createContext<TStateContext>(
                 "cigarettesTaken": "000000000",
                 "candlesTaken": "00000",
                 "pagesTaken": "000",
-                },
-    
-            "inventory": {
-                "cigarettes": 0,
-                "candles": 0,
-                "pages": 0  
-            }
+                "keysTaken": "000000000"
+                }
         })
     }
 );

@@ -8,4 +8,7 @@ public class LockButton
     public string Label { get; set; }
     public int KeyIndex { get; set; }
     public int TargetLocationId { get; set; }
+    
+    public int LocationId { get; set; }
+    public Location Location { get; set; }
 }

@@ -5,6 +5,7 @@ import {
 } from "react-router-dom"
 import Game from './app/Game'
 import Index from './app/Index'
+import Minigame from './app/Minigame'
 
 function App() {
 
@@ -23,11 +24,14 @@ function App() {
         },
       ]
     },
+    {
+      path: "/minigame",
+      element: <Minigame />
+    }
   ])
 
   return (
     <>
-      <h1>router</h1>
       <RouterProvider router={router}></RouterProvider>
     </>
   )

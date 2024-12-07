@@ -1,0 +1,25 @@
+.main {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-evenly;
+    gap: 5rem;
+}
+
+.keypad {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.key {
+    display: flex;
+}
+
+.result {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.resultBox {
+    padding: 0 1rem;
+}
