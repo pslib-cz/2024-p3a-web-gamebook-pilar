@@ -31,6 +31,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Images\cutscenes\start\" />
+    <Folder Include="Images\floor1\hallway\" />
+    <Folder Include="Images\floor1\lobby\" />
+    <Folder Include="Images\floor2\" />
+    <Folder Include="Images\floor3\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
