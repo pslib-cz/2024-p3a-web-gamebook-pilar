@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace GamebookPilar.Server.Models;
 
 public class LockButton
@@ -10,5 +12,6 @@ public class LockButton
     public int TargetLocationId { get; set; }
     
     public int LocationId { get; set; }
+    [JsonIgnore]
     public Location Location { get; set; }
 }

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace GamebookPilar.Server.Models;
 
 public class Frame
@@ -8,5 +10,6 @@ public class Frame
     public string Monologue { get; set; }
     
     public int CutsceneId { get; set; }
+    [JsonIgnore]
     public Cutscene Cutscene { get; set; }
 }
