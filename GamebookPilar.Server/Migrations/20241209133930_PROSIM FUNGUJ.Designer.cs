@@ -2,6 +2,7 @@
 using GamebookPilar.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamebookPilar.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241209133930_PROSIM FUNGUJ")]
+    partial class PROSIMFUNGUJ
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -83,6 +86,17 @@ namespace GamebookPilar.Server.Migrations
                     b.ToTable("Frames");
                 });
 
+            modelBuilder.Entity("GamebookPilar.Server.Models.Hud", b =>
+                {
+                    b.Property<int>("HudId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("HudId");
+
+                    b.ToTable("Huds");
+                });
+
             modelBuilder.Entity("GamebookPilar.Server.Models.KeypadButton", b =>
                 {
                     b.Property<int>("KeypadButtonId")
@@ -125,17 +139,10 @@ namespace GamebookPilar.Server.Migrations
                     b.Property<int>("ContainedItem")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsLit")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ItemIndex")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Monologue")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -207,8 +214,11 @@ namespace GamebookPilar.Server.Migrations
 
             modelBuilder.Entity("GamebookPilar.Server.Models.Status", b =>
                 {
-                    b.Property<int>("StatusId")
+                    b.Property<int>("StatusID")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HudId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ImageUrl")
@@ -218,7 +228,9 @@ namespace GamebookPilar.Server.Migrations
                     b.Property<int>("SanityIndex")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("StatusId");
+                    b.HasKey("StatusID");
+
+                    b.HasIndex("HudId");
 
                     b.ToTable("Statuses");
                 });
@@ -278,9 +290,25 @@ namespace GamebookPilar.Server.Migrations
                     b.Navigation("Location");
                 });
 
+            modelBuilder.Entity("GamebookPilar.Server.Models.Status", b =>
+                {
+                    b.HasOne("GamebookPilar.Server.Models.Hud", "Hud")
+                        .WithMany("Statuses")
+                        .HasForeignKey("HudId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hud");
+                });
+
             modelBuilder.Entity("GamebookPilar.Server.Models.Cutscene", b =>
                 {
                     b.Navigation("Frames");
+                });
+
+            modelBuilder.Entity("GamebookPilar.Server.Models.Hud", b =>
+                {
+                    b.Navigation("Statuses");
                 });
 
             modelBuilder.Entity("GamebookPilar.Server.Models.Location", b =>

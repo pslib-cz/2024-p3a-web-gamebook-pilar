@@ -1,6 +1,5 @@
-import { MutableRefObject, Ref, useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import s from './Minigame.module.css';
-import { StateContext } from '../providers/StateProvider';
 import { useNavigate } from 'react-router';
 import MGBox from '../components/MGBox';
 
@@ -29,16 +28,7 @@ interface State {
 }
 
 function Minigame() {
-    let { updateGameKey, encode, decode } = useContext(StateContext);
     let nav = useNavigate();
-
-    const jumpToLevel = (levelId:number) => {
-        let gameKey = updateGameKey(undefined);
-        let state = decode(gameKey);
-        state.player.currentLocation = levelId;
-        let newGameKey = encode(state);
-        nav(`/game/${newGameKey}`);
-    }
 
     let maybeTargetCode = localStorage.getItem("mg-targetCode");
     let targetCode = maybeTargetCode ? maybeTargetCode : "7194"
@@ -54,7 +44,6 @@ function Minigame() {
     const [tries, setTries] = useState(0);
 
     const changeCode = (num: string) => {
-        console.log(code);
         if (num == "*") {
             setCode("");
         } else if (num == "#") {
@@ -70,7 +59,6 @@ function Minigame() {
                     setCode("");
                     setTries(tries + 1);
                 }
-                // jumpToLevel(targetRoom);
             }
         } else {
             if (code.length < targetCode.length && pastCodes.length <= 4) {
@@ -90,7 +78,7 @@ function Minigame() {
                 } else if (targetCode.includes(pastLetter)) {
                     newValues.push(pastLetter + "|1");
                 } else {
-                    newValues.push(pastLetter + "|0");
+                    newValues.push(pastLetter + "|3");
                 }
             }
         }

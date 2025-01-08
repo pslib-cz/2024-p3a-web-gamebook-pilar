@@ -12,49 +12,48 @@ namespace GamebookPilar.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CutsceneController : ControllerBase
+    public class StatusController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public CutsceneController(AppDbContext context)
+        public StatusController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Cutscene
+        // GET: api/Status
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cutscene>>> GetCutscenes()
+        public async Task<ActionResult<IEnumerable<Status>>> GetStatuses()
         {
-            return await _context.Cutscenes.ToListAsync();
+            return await _context.Statuses.ToListAsync();
         }
 
-        // GET: api/Cutscene/5
+        // GET: api/Status/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cutscene>> GetCutscene(int id)
+        public async Task<ActionResult<Status>> GetStatus(int id)
         {
-            var cutscene = await _context.Cutscenes
-                .Include(c => c.Frames)
-                .FirstOrDefaultAsync(c => c.CutsceneId == id);
+            var status = await _context.Statuses
+                .FirstOrDefaultAsync(c => c.StatusId == id);
 
-            if (cutscene == null)
+            if (status == null)
             {
                 return NotFound();
             }
 
-            return cutscene;
+            return status;
         }
 
-        // PUT: api/Cutscene/5
+        // PUT: api/Status/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCutscene(int id, Cutscene cutscene)
+        public async Task<IActionResult> PutStatus(int id, Status status)
         {
-            if (id != cutscene.CutsceneId)
+            if (id != status.StatusId)
             {
                 return BadRequest();
             }
 
-            _context.Entry(cutscene).State = EntityState.Modified;
+            _context.Entry(status).State = EntityState.Modified;
 
             try
             {
@@ -62,7 +61,7 @@ namespace GamebookPilar.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CutsceneExists(id))
+                if (!StatusExists(id))
                 {
                     return NotFound();
                 }
@@ -75,36 +74,36 @@ namespace GamebookPilar.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Cutscene
+        // POST: api/Status
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Cutscene>> PostCutscene(Cutscene cutscene)
+        public async Task<ActionResult<Status>> PostStatus(Status status)
         {
-            _context.Cutscenes.Add(cutscene);
+            _context.Statuses.Add(status);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCutscene", new { id = cutscene.CutsceneId }, cutscene);
+            return CreatedAtAction("GetStatus", new { id = status.StatusId }, status);
         }
 
-        // DELETE: api/Cutscene/5
+        // DELETE: api/Status/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCutscene(int id)
+        public async Task<IActionResult> DeleteStatus(int id)
         {
-            var cutscene = await _context.Cutscenes.FindAsync(id);
-            if (cutscene == null)
+            var status = await _context.Statuses.FindAsync(id);
+            if (status == null)
             {
                 return NotFound();
             }
 
-            _context.Cutscenes.Remove(cutscene);
+            _context.Statuses.Remove(status);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool CutsceneExists(int id)
+        private bool StatusExists(int id)
         {
-            return _context.Cutscenes.Any(e => e.CutsceneId == id);
+            return _context.Statuses.Any(e => e.StatusId == id);
         }
     }
 }

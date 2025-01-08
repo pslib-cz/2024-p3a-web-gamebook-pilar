@@ -1,0 +1,65 @@
+.body {
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.action {
+    border: none;
+    background-color: #000000aa;
+    color: #ffffff;
+    width: 10%;
+    padding: 8px 0;
+    position: absolute;
+}
+
+.hud {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+}
+
+.player {
+    margin: 1%;
+    display: flex;
+    gap: 2%;
+    width: 20%;
+}
+
+.status {
+    width: 30%;
+    height: 30%;
+}
+
+.inventory {
+    margin: 1%;
+    /* display: flex; */
+
+}
+
+.item {
+    border: 0;
+    width: 64px;
+}
+
+.itemLabel {
+    /* color: black; */
+    /* up: 8px; */
+    /* right: 8px; */
+}
+
+img {
+    width: 100%;
+    height: 100%;
+}
+
+.monologue {
+    display: flex;
+    justify-content: start;
+    align-items: end;
+}

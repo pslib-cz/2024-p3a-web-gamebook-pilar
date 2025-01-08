@@ -20,6 +20,8 @@ namespace GamebookPilar.Server.Data
         public DbSet<Cutscene> Cutscenes { get; set; }
         public DbSet<Frame> Frames { get; set; }
         
+        public DbSet<Status> Statuses { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Location>()
@@ -41,6 +43,11 @@ namespace GamebookPilar.Server.Data
                 .HasMany(l => l.LockButtons)
                 .WithOne(lk => lk.Location)
                 .HasForeignKey(lk => lk.LocationId);
+
+            modelBuilder.Entity<Cutscene>()
+                .HasMany(l => l.Frames)
+                .WithOne(lk => lk.Cutscene)
+                .HasForeignKey(lk => lk.CutsceneId);
         }
 
     }

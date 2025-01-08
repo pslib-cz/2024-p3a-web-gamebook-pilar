@@ -1,0 +1,8 @@
+.main {
+    display: flex;
+    width: max(min(8vw, 12vh), 32px);
+    height: max(min(8vw, 12vh), 32px);
+    justify-content: center;
+    align-items: center;
+    font-size: max(min(3vw, 5vh), 18px);
+}

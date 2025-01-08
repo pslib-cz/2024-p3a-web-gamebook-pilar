@@ -1,21 +1,13 @@
 import {FC, PropsWithChildren, useState, createContext} from "react"
 
-interface PlayerState {
+interface State {
     currentLocation: number, // the location that the player is currently in
     sanity: number // sanity level of player (0 to 5)
-}
-
-interface GameState {
-    flareLocation: number, // location of the flare, -1 means its in the inventory of the player, -2 means it hasn't been found yet
     cigarettesTaken: string, // cigarettes will be finite and set for each room, it will be held like this: 10101010110
     candlesTaken: string, // -||-
     pagesTaken: string, // -||-
-    keysTaken: string // -||-
-}
-
-interface State {
-    player: PlayerState,
-    game: GameState
+    keysTaken: string, // -||-
+    cigarettesSmoked: number // keeps track of used cigarettes, will be matched with cigarettesTaken to deduce cigarette count
 }
 
 // encodes a number into a binary string, filling in remaining 0's
@@ -35,13 +27,13 @@ function binToNum(binaryStr: string): number {
 // encodes playerState, gameState and inventory in a single binary string
 function stateToBin(state: State): string {
     let rtn = "";
-    rtn = rtn + numToBin(state.player.currentLocation, 6);
-    rtn = rtn + numToBin(state.player.sanity, 3);
-    rtn = rtn + numToBin(state.game.flareLocation + 2, 6);
-    rtn = rtn + state.game.cigarettesTaken; // 10 bits
-    rtn = rtn + state.game.candlesTaken; // 5 bits
-    rtn = rtn + state.game.pagesTaken; // 3 bits
-    rtn = rtn + state.game.keysTaken; // 9 bits
+    rtn = rtn + numToBin(state.currentLocation, 6);
+    rtn = rtn + numToBin(state.sanity, 3);
+    rtn = rtn + state.cigarettesTaken; // 10 bits
+    rtn = rtn + state.candlesTaken; // 5 bits
+    rtn = rtn + state.pagesTaken; // 3 bits
+    rtn = rtn + state.keysTaken; // 9 bits
+    rtn = rtn + state.cigarettesSmoked; // 4 bits
     return rtn;
 }
 
@@ -55,9 +47,6 @@ function binToState(bin: string): State {
     const sanity = binToNum(bin.slice(index, index + 3));
     index += 3;
 
-    const flareLocation = binToNum(bin.slice(index, index + 6)) - 2;
-    index += 6;
-
     const cigarettesTaken = bin.slice(index, index + 9);
     index += 9;
 
@@ -68,19 +57,19 @@ function binToState(bin: string): State {
     index += 3;
 
     const keysTaken = bin.slice(index, index + 9);
+    index += 9;
+
+    const cigarettesSmoked = binToNum(bin.slice(index, index + 4));
+    index += 4;
 
     return {
-        player: {
-            currentLocation: currentLocation,
-            sanity: sanity,
-        },
-        game: {
-            flareLocation: flareLocation,
-            cigarettesTaken: cigarettesTaken,
-            candlesTaken: candlesTaken,
-            pagesTaken: pagesTaken,
-            keysTaken: keysTaken
-        },
+        currentLocation: currentLocation,
+        sanity: sanity,
+        cigarettesTaken: cigarettesTaken,
+        candlesTaken: candlesTaken,
+        pagesTaken: pagesTaken,
+        keysTaken: keysTaken,
+        cigarettesSmoked: cigarettesSmoked
     };
 }
 
@@ -131,7 +120,15 @@ function decode(text: string): State {
 }
 
 function updateGameKey(newString: string | undefined) : string {
-    let gameKey: string = "AAUAAAAA+41";
+    let gameKey: string = encode({
+        "currentLocation": 1,
+        "sanity": 5,
+        "cigarettesTaken": "000000000",
+        "candlesTaken": "00000",
+        "pagesTaken": "000",
+        "keysTaken": "000000000",
+        "cigarettesSmoked": 0,
+    });
     let storedKey = localStorage.getItem("gameKey");
     if (newString) {
         if (newString != "reset") {
@@ -155,18 +152,14 @@ export const StateContext = createContext<TStateContext>(
         updateGameKey: (k: string | undefined) => "",
         encode: (s: State) => "",
         decode: (s: string) => ({
-            "player": {
-                "currentLocation": 0,
-                "sanity": 5
-            },
-    
-            "game": {
-                "flareLocation": -2,
-                "cigarettesTaken": "000000000",
-                "candlesTaken": "00000",
-                "pagesTaken": "000",
-                "keysTaken": "000000000"
-                }
+            "currentLocation": 0,
+            "sanity": 5,
+            "flareLocation": -2,
+            "cigarettesTaken": "000000000",
+            "candlesTaken": "00000",
+            "pagesTaken": "000",
+            "keysTaken": "000000000",
+            "cigarettesSmoked": 0,
         })
     }
 );

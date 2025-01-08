@@ -1,17 +1,26 @@
 .main {
+    height: 100%;
     display: flex;
     flex-grow: 1;
     justify-content: space-evenly;
     gap: 5rem;
+    align-items: center;
 }
 
 .keypad {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
 }
 
 .key {
     display: flex;
+    width: max(min(10vw, 15vh), 32px);
+    height: max(min(10vw, 15vh), 32px);
+    justify-content: center;
+    align-items: center;
+    border: none;
+    font-size: max(min(4vw, 6vh), 20px);
 }
 
 .result {

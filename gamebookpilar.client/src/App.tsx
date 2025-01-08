@@ -6,8 +6,10 @@ import {
 import Game from './app/Game'
 import Index from './app/Index'
 import Minigame from './app/Minigame'
+import { useEffect, useRef } from 'react'
 
 function App() {
+  const canvasRef = useRef(0);
 
   const router = createBrowserRouter([
     {
@@ -30,9 +32,14 @@ function App() {
     }
   ])
 
+  useEffect
+
   return (
     <>
       <RouterProvider router={router}></RouterProvider>
+      {/* <canvas>
+        
+      </canvas> */}
     </>
   )
 }
