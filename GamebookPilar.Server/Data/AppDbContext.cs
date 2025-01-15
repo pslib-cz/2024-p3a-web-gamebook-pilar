@@ -16,6 +16,8 @@ namespace GamebookPilar.Server.Data
         public DbSet<MoveButton> MoveButtons { get; set; }
         public DbSet<KeypadButton> KeypadButtons { get; set; }
         public DbSet<LockButton> LockButtons { get; set; }
+        
+        public DbSet<Switch> Switches { get; set; }
 
         public DbSet<Cutscene> Cutscenes { get; set; }
         public DbSet<Frame> Frames { get; set; }
@@ -41,6 +43,11 @@ namespace GamebookPilar.Server.Data
 
             modelBuilder.Entity<Location>()
                 .HasMany(l => l.LockButtons)
+                .WithOne(lk => lk.Location)
+                .HasForeignKey(lk => lk.LocationId);
+
+            modelBuilder.Entity<Location>()
+                .HasMany(l => l.Switches)
                 .WithOne(lk => lk.Location)
                 .HasForeignKey(lk => lk.LocationId);
 

@@ -51,8 +51,6 @@ function Minigame() {
                 if (code == targetCode) {
                     nav(`/game/${targetRoom}`)
                 } else if (tries >= 3) {
-                    pastCodes.push(code);
-                    setCode("");
                     nav(`/game/${sourceRoom}`);
                 } else {
                     pastCodes.push(code);

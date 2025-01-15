@@ -8,14 +8,12 @@ type MGBoxProps = {
 export const MGBox:FC<MGBoxProps> = ({content}) => {
 
     const getColor = (curr: number) => {
-        console.log(curr);
         switch (curr) {
             case 1:
                 return "#606030";
             case 2:
                 return "#306030";
             case 3:
-                console.log("AAAAAAAAAAA");
                 return "#603030";
             default:
                 return "#303030";

@@ -2,6 +2,7 @@
 using GamebookPilar.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -9,9 +10,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamebookPilar.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250110073840_aaaaaaaa")]
+    partial class aaaaaaaa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -22,15 +25,15 @@ namespace GamebookPilar.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("FlareActive")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("HasItem")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ImageUrl")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("IsLit")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("INTEGER");
@@ -242,9 +245,6 @@ namespace GamebookPilar.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("SwitchIndex")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TargetLocationId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("SwitchId");

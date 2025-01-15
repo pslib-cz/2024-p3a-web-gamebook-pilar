@@ -7,6 +7,7 @@ interface State {
     candlesTaken: string, // -||-
     pagesTaken: string, // -||-
     keysTaken: string, // -||-
+    switchesFlipped: string, // -||-
     cigarettesSmoked: number // keeps track of used cigarettes, will be matched with cigarettesTaken to deduce cigarette count
 }
 
@@ -33,7 +34,8 @@ function stateToBin(state: State): string {
     rtn = rtn + state.candlesTaken; // 5 bits
     rtn = rtn + state.pagesTaken; // 3 bits
     rtn = rtn + state.keysTaken; // 9 bits
-    rtn = rtn + state.cigarettesSmoked; // 4 bits
+    rtn = rtn + state.switchesFlipped; // 9 bits
+    rtn = rtn + numToBin(state.cigarettesSmoked, 4); // 4 bits
     return rtn;
 }
 
@@ -59,6 +61,9 @@ function binToState(bin: string): State {
     const keysTaken = bin.slice(index, index + 9);
     index += 9;
 
+    const switchesFlipped = bin.slice(index, index + 9);
+    index += 9;
+
     const cigarettesSmoked = binToNum(bin.slice(index, index + 4));
     index += 4;
 
@@ -69,6 +74,7 @@ function binToState(bin: string): State {
         candlesTaken: candlesTaken,
         pagesTaken: pagesTaken,
         keysTaken: keysTaken,
+        switchesFlipped: switchesFlipped,
         cigarettesSmoked: cigarettesSmoked
     };
 }
@@ -127,6 +133,7 @@ function updateGameKey(newString: string | undefined) : string {
         "candlesTaken": "00000",
         "pagesTaken": "000",
         "keysTaken": "000000000",
+        "switchesFlipped": "000000000",
         "cigarettesSmoked": 0,
     });
     let storedKey = localStorage.getItem("gameKey");
@@ -159,6 +166,7 @@ export const StateContext = createContext<TStateContext>(
             "candlesTaken": "00000",
             "pagesTaken": "000",
             "keysTaken": "000000000",
+            "switchesFlipped": "000000000",
             "cigarettesSmoked": 0,
         })
     }

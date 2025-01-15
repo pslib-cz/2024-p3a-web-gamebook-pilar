@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { StateContext } from '../providers/StateProvider';
 import s from './Game.module.css';
 
+const SERVER_URL = "https://localhost:7014";
+
 interface MoveButton {
     moveButtonId: number, //PK
     label: string,
@@ -35,7 +37,17 @@ interface LockButton {
 interface Background {
     backgroundId: number, //PK
     hasItem: boolean,
+    isLit: boolean,
     imageUrl: string,
+    locationId: number //FK
+}
+
+interface Switch {
+    switchId: number, //Pk
+    locationX: number,
+    locationY: number,
+    switchIndex: number,
+    targetLocationId: number,
     locationId: number //FK
 }
 
@@ -44,10 +56,12 @@ interface Location {
     monologue: string,
     containedItem: number,
     itemIndex: number,
+    switchIndex: number,
     moveButtons: MoveButton[],
     keypadButtons: KeypadButton[],
     lockButtons: LockButton[],
     backgrounds: Background[],
+    switches: Switch[],
     isLit: boolean
 }
 
@@ -58,17 +72,18 @@ interface State {
     candlesTaken: string, // -||-
     pagesTaken: string, // -||-
     keysTaken: string, // -||-
+    switchesFlipped: string, // -||-
     cigarettesSmoked: number // keeps track of used cigarettes, will be matched with cigarettesTaken to deduce cigarette count
 }
 
 function Game() {
-    //AA0AAAAA+41
     let { receivedGameKey } = useParams();
     let { updateGameKey, encode, decode } = useContext(StateContext);
     let nav = useNavigate();
 
     let gameKey = updateGameKey(receivedGameKey);
     const [state, setState] = useState<State>(decode(gameKey));
+    console.log(state)
 
     const [currentLocation, setCurrentLocation] = useState<Location>();
 
@@ -77,40 +92,36 @@ function Game() {
     useEffect(() => {
         (async () => {
             gameKey = updateGameKey(receivedGameKey);
-            setState(decode(gameKey));
+            let newState = decode(gameKey);
             try {
-                const response = await fetch(`https://localhost:7014/api/location/${state.currentLocation}`);
+                const response = await fetch(`${SERVER_URL}/api/location/${newState.currentLocation}`);
                 const jsonData:Location = await response.json();
-                if (jsonData.isLit) {
-                    setState(() => {
-                        state.sanity = 5;
-                        return state;
-                    })
+                if (isLocationLit(jsonData)) {
+                    newState.sanity = 5;
+                } else {
+                    if (newState.sanity < 1) {
+                        console.log("game over");
+                    }
                 }
                 setCurrentLocation(jsonData);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        })();
-    }, [receivedGameKey]);
 
-    useEffect(() => {
-        (async () => {
-            if (currentLocation) {
-                let hasItem = checkItemPresence();
-                let resultBackground = currentLocation.backgrounds[0];
-                for (const background of currentLocation.backgrounds) {
-                    if (background.hasItem == hasItem) {
+                let hasItem = checkItemPresence(jsonData);
+                let resultBackground = jsonData.backgrounds[0];
+                for (const background of jsonData.backgrounds) {
+                    if (background.hasItem == hasItem && background.isLit == isLocationLit(jsonData)) {
                         resultBackground = background;
                     }
                 }
                 setBackgroundImageUrl(resultBackground.imageUrl);
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
+            setState(newState);
         })();
-    }, [state, currentLocation]);
+    }, [receivedGameKey]);
 
     const findItem = () => {
-        if (state.sanity > 1) {
+        if (state.sanity > 1 && !isLocationLit(currentLocation)) {
             state.sanity -= 1;
         }
         if (currentLocation) {
@@ -130,51 +141,47 @@ function Game() {
                 default:
                     break;
             }
-            setState(state);
             nav(`/game/${encode(state)}`);
         }
-        console.log(state.cigarettesTaken);
     }
 
-    const insertLocation = (key:string, targetLocationId:number) => {
-        let tempState = decode(key);
-        tempState.currentLocation = targetLocationId;
-        return encode(tempState);
+    const isLocationLit = (location?: Location) => {
+        if (location) {
+            return location?.isLit || state.switchesFlipped[location?.switchIndex] == "1";
+        } else {
+            return false;
+        }
     }
 
     const doMinigameAction = (code:string, targetLocationId:number) => {
-        if (state.sanity > 1) {
-            state.sanity -= 1;
-        }
         localStorage.setItem("mg-targetCode", code);
+        state.sanity -= 1;
         localStorage.setItem("mg-sourceRoom", encode(state));
-        localStorage.setItem("mg-targetRoom", insertLocation(encode(state), targetLocationId));
+        state.currentLocation = targetLocationId;
+        localStorage.setItem("mg-targetRoom", encode(state));
         nav("/minigame");
     }
 
     const doMoveAction = (targetLocationId:number) => {
-        if (state.sanity > 1) {
-            state.sanity -= 1;
-        }
-        let newGameKey:string = insertLocation(encode(state), targetLocationId);
-        setState(decode(newGameKey));
-        nav(`/game/${newGameKey}`);
+        state.currentLocation = targetLocationId;
+        state.sanity -= 1;
+        nav(`/game/${encode(state)}`);
     }
 
-    const checkItemPresence = () => {
-        if (currentLocation) {
-            switch (currentLocation.containedItem) {
+    const checkItemPresence = (location?:Location) => {
+        if (location) {
+            switch (location.containedItem) {
                 case 0:
-                    return state.cigarettesTaken[currentLocation.itemIndex] == "0"
+                    return state.cigarettesTaken[location.itemIndex] == "0"
 
                 case 1:
-                    return state.candlesTaken[currentLocation.itemIndex] == "0"
+                    return state.candlesTaken[location.itemIndex] == "0"
 
                 case 2:
-                    return state.pagesTaken[currentLocation.itemIndex] == "0"
+                    return state.pagesTaken[location.itemIndex] == "0"
 
                 case 3:
-                    return state.keysTaken[currentLocation.itemIndex] == "0"
+                    return state.keysTaken[location.itemIndex] == "0"
                 default:
                     break;
                 }
@@ -184,39 +191,50 @@ function Game() {
 
     const smokeCigarette = () => {
         let currentCigarettes = (state.cigarettesTaken.match(new RegExp("1", "g")) || []).length - state.cigarettesSmoked;
-        if (currentCigarettes > 0) {
-            state.sanity += 2;
-            if (state.sanity > 5) {
-                state.sanity = 5;
-            }
+        if (currentCigarettes > 0 && state.sanity < 5) {
+            state.sanity = 5;
             state.cigarettesSmoked += 1;
             setState(state);
             nav(`/game/${encode(state)}`);
         }
     }
 
+    const flipSwitch = (switchIndex:number) => {
+        state.switchesFlipped = state.switchesFlipped.substring(0, switchIndex) + "1" + state.switchesFlipped.substring(switchIndex + 1);
+        setState(state);
+        nav(`/game/${encode(state)}`);
+
+    }
+
     return (
-        <div className={s.body} style={{backgroundImage: `url(https://localhost:7014/Images/${backgroundImageUrl})`}}>
+        <div className={s.body} style={{backgroundImage: `url(${SERVER_URL}/Images/${backgroundImageUrl})`}}>
             <div className={s.hud}>
                 <div className={s.player}>
                     <div className={s.status}>
-                        <img src={ `https://localhost:7014/Images/statuses/${state.sanity}.png` } alt="" />
+                        <img src={ `${SERVER_URL}/Images/statuses/${state.sanity}.png` } alt="" />
                     </div>
                     <div className={s.info}>
                         <div className={s.monologue}>
                             <p>{currentLocation?.monologue}</p>
                         </div>
-                        <div className={s.sanityBar}></div>
                     </div>
                 </div>
                 <div className={s.inventory}>
                     <button className={s.item} onClick={smokeCigarette}>
                         <p className={s.itemLabel}>{(state.cigarettesTaken.match(new RegExp("1", "g")) || []).length - state.cigarettesSmoked}</p>
-                        <img src="https://localhost:7014/Images/inventory/cigarette.png" alt="" />
+                        <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/cigarette.png`} alt="" />
                     </button>
+                    <div className={s.item}>
+                        <p className={s.itemLabel}>{(state.candlesTaken.match(new RegExp("1", "g")) || []).length}</p>
+                        <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/candle.png`} alt="" />
+                    </div>
+                    <div className={s.item}>
+                        <p className={s.itemLabel}>{(state.pagesTaken.match(new RegExp("1", "g")) || []).length}</p>
+                        <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/page.png`} alt="" />
+                    </div>
                 </div>
             </div>
-            {checkItemPresence() ? <button className={s.action} style={{left: `45%`, top: `75%`}} onClick={() => {findItem()}}> Find item </button>:null}
+            {checkItemPresence(currentLocation) ? <button className={s.action} style={{left: `45%`, top: `75%`}} onClick={() => {findItem()}}> search room </button>:null}
             {currentLocation?.moveButtons.map((moveButton:MoveButton) => (
                 <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.targetLocationId)}}> {moveButton.label} </button>
             ))}
@@ -229,6 +247,14 @@ function Game() {
                 } else {
                     return null;
                 }
+            })}
+            {currentLocation?.switches.map((sswitch:Switch) => {
+                if (state.switchesFlipped[sswitch.switchIndex] == "0") {
+                    return <button className={s.action} style={{left: `${sswitch.locationX - 5}%`, top: `${sswitch.locationY}%`}} onClick={() => {flipSwitch(sswitch.switchIndex)}}> flip switch </button>;
+                } else {
+                    return null;
+                }
+                
             })}
         </div>
     );
