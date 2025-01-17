@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Rzwb85+CW7Z8VY5T9ZKFlBBi47A6g9YeWszVEGCsnTI=",
+  "Hash": "VRqQz2trrljqcJZaJwU/IZDMMLXnVoAEG351bZCuiFc=",
   "Source": "GamebookPilar.Server",
   "BasePath": "_content/GamebookPilar.Server",
   "Mode": "Default",
@@ -11,10 +11,10 @@
       "Version": 2,
       "Source": "gamebookpilar.client",
       "GetPublishAssetsTargets": "GetCurrentProjectPublishStaticWebAssetItems",
-      "AdditionalPublishProperties": "",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
       "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained",
       "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
-      "AdditionalBuildProperties": "",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
       "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier;SelfContained"
     }
   ],

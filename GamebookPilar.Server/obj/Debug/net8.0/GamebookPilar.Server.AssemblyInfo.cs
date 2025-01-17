@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GamebookPilar.Server")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+451007a44273704a19af8011504904d95ef654cb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+258ea2e5a74b809338982097aa4130a21a041149")]
 [assembly: System.Reflection.AssemblyProductAttribute("GamebookPilar.Server")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GamebookPilar.Server")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
