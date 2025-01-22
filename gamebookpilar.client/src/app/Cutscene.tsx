@@ -3,18 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { StateContext } from '../providers/StateProvider';
 import s from './Cutscene.module.css';
 
-interface Cutscene {
-    cutsceneId: number, //PK,
-    targetLocationId: number
-    frames: Frame[]
-}
-
 interface Frame {
     frameId: number, //PK
     imageUrl: string,
     frameIndex: number,
     monologue: string,
-    cutsceneId: number //FK
+    locationId: number //FK
 }
 
 function Cutscene() {
@@ -25,8 +19,6 @@ function Cutscene() {
 
     // let gameKey = updateGameKey(receivedGameKey);
     // let state = decode(gameKey);
-
-    const [currentCutscene, setCurrentCutscene] = useState<Cutscene>();
 
     useEffect(() => {
         (async () => {

@@ -9,7 +9,7 @@ public class Frame
     public int FrameIndex { get; set; }
     public string Monologue { get; set; }
     
-    public int CutsceneId { get; set; }
+    public int LocationId { get; set; }
     [JsonIgnore]
-    public Cutscene Cutscene { get; set; }
+    public Location Location { get; set; }
 }

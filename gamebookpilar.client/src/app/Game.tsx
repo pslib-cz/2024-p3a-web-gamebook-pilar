@@ -54,9 +54,10 @@ interface Switch {
 interface Location {
     locationId: number, //PK
     monologue: string,
-    containedItem: number,
-    itemIndex: number,
-    switchIndex: number,
+    containedItem: number | undefined,
+    itemIndex: number | undefined,
+    switchIndex: number | undefined,
+    cutsceneIndex: number | undefined,
     moveButtons: MoveButton[],
     keypadButtons: KeypadButton[],
     lockButtons: LockButton[],
@@ -83,7 +84,7 @@ function Game() {
 
     let gameKey = updateGameKey(receivedGameKey);
     const [state, setState] = useState<State>(decode(gameKey));
-    console.log(state)
+    
 
     const [currentLocation, setCurrentLocation] = useState<Location>();
 
@@ -96,6 +97,7 @@ function Game() {
             try {
                 const response = await fetch(`${SERVER_URL}/api/location/${newState.currentLocation}`);
                 const jsonData:Location = await response.json();
+                
                 if (isLocationLit(jsonData)) {
                     newState.sanity = 5;
                 } else {
@@ -125,21 +127,23 @@ function Game() {
             state.sanity -= 1;
         }
         if (currentLocation) {
-            switch (currentLocation.containedItem) {
-                case 0:
-                    state.cigarettesTaken = state.cigarettesTaken.substring(0, currentLocation.itemIndex) + "1" + state.cigarettesTaken.substring(currentLocation.itemIndex + 1);
-                    break;
-                case 1:
-                    state.candlesTaken = state.candlesTaken.substring(0, currentLocation.itemIndex) + "1" + state.candlesTaken.substring(currentLocation.itemIndex + 1);
-                    break;
-                case 2:
-                    state.pagesTaken = state.pagesTaken.substring(0, currentLocation.itemIndex) + "1" + state.pagesTaken.substring(currentLocation.itemIndex + 1);
-                    break;
-                case 3:
-                    state.keysTaken = state.keysTaken.substring(0, currentLocation.itemIndex) + "1" + state.keysTaken.substring(currentLocation.itemIndex + 1);
-                    break;
-                default:
-                    break;
+            if (currentLocation.itemIndex != undefined) {
+                switch (currentLocation.containedItem) {
+                    case 0:
+                        state.cigarettesTaken = state.cigarettesTaken.substring(0, currentLocation.itemIndex) + "1" + state.cigarettesTaken.substring(currentLocation.itemIndex + 1);
+                        break;
+                    case 1:
+                        state.candlesTaken = state.candlesTaken.substring(0, currentLocation.itemIndex) + "1" + state.candlesTaken.substring(currentLocation.itemIndex + 1);
+                        break;
+                    case 2:
+                        state.pagesTaken = state.pagesTaken.substring(0, currentLocation.itemIndex) + "1" + state.pagesTaken.substring(currentLocation.itemIndex + 1);
+                        break;
+                    case 3:
+                        state.keysTaken = state.keysTaken.substring(0, currentLocation.itemIndex) + "1" + state.keysTaken.substring(currentLocation.itemIndex + 1);
+                        break;
+                    default:
+                        break;
+                }
             }
             nav(`/game/${encode(state)}`);
         }
@@ -147,7 +151,13 @@ function Game() {
 
     const isLocationLit = (location?: Location) => {
         if (location) {
-            return location?.isLit || state.switchesFlipped[location?.switchIndex] == "1";
+            console.log("switchIndex", location.switchIndex)
+            if (location.switchIndex != undefined) {
+                console.log("AAA")
+                return state.switchesFlipped[location?.switchIndex] == "1";
+            } else {
+                return location?.isLit;
+            }
         } else {
             return false;
         }
@@ -170,21 +180,23 @@ function Game() {
 
     const checkItemPresence = (location?:Location) => {
         if (location) {
-            switch (location.containedItem) {
-                case 0:
-                    return state.cigarettesTaken[location.itemIndex] == "0"
-
-                case 1:
-                    return state.candlesTaken[location.itemIndex] == "0"
-
-                case 2:
-                    return state.pagesTaken[location.itemIndex] == "0"
-
-                case 3:
-                    return state.keysTaken[location.itemIndex] == "0"
-                default:
-                    break;
-                }
+            if (location.itemIndex != undefined) {
+                switch (location.containedItem) {
+                    case 0:
+                        return state.cigarettesTaken[location.itemIndex] == "0"
+    
+                    case 1:
+                        return state.candlesTaken[location.itemIndex] == "0"
+    
+                    case 2:
+                        return state.pagesTaken[location.itemIndex] == "0"
+    
+                    case 3:
+                        return state.keysTaken[location.itemIndex] == "0"
+                    default:
+                        break;
+                    }
+            }
             }
         return false;
     }

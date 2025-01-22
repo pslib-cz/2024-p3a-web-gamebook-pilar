@@ -38,6 +38,7 @@ namespace GamebookPilar.Server.Controllers
                 .Include(p => p.KeypadButtons)
                 .Include(p => p.LockButtons)
                 .Include(p=> p.Switches)
+                .Include(p=> p.Frames)
                 .FirstOrDefaultAsync(p => p.LocationId == id);;
 
             if (location == null)

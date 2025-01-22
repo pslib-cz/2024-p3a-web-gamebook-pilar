@@ -19,7 +19,6 @@ namespace GamebookPilar.Server.Data
         
         public DbSet<Switch> Switches { get; set; }
 
-        public DbSet<Cutscene> Cutscenes { get; set; }
         public DbSet<Frame> Frames { get; set; }
         
         public DbSet<Status> Statuses { get; set; }
@@ -51,10 +50,10 @@ namespace GamebookPilar.Server.Data
                 .WithOne(lk => lk.Location)
                 .HasForeignKey(lk => lk.LocationId);
 
-            modelBuilder.Entity<Cutscene>()
+            modelBuilder.Entity<Location>()
                 .HasMany(l => l.Frames)
-                .WithOne(lk => lk.Cutscene)
-                .HasForeignKey(lk => lk.CutsceneId);
+                .WithOne(lk => lk.Location)
+                .HasForeignKey(lk => lk.LocationId);
         }
 
     }

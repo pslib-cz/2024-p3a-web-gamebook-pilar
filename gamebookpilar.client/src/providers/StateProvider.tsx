@@ -161,7 +161,6 @@ export const StateContext = createContext<TStateContext>(
         decode: (s: string) => ({
             "currentLocation": 0,
             "sanity": 5,
-            "flareLocation": -2,
             "cigarettesTaken": "000000000",
             "candlesTaken": "00000",
             "pagesTaken": "000",
