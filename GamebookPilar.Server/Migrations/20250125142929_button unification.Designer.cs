@@ -3,6 +3,7 @@ using System;
 using GamebookPilar.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamebookPilar.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250125142929_button unification")]
+    partial class buttonunification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -175,7 +178,7 @@ namespace GamebookPilar.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("KeyIndex")
+                    b.Property<int>("KeyIndex")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Label")
@@ -192,6 +195,7 @@ namespace GamebookPilar.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Pin")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("TargetLocationId")

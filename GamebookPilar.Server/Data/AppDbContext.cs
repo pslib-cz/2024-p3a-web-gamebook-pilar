@@ -14,8 +14,6 @@ namespace GamebookPilar.Server.Data
         public DbSet<Background> Backgrounds { get; set; }
 
         public DbSet<MoveButton> MoveButtons { get; set; }
-        public DbSet<KeypadButton> KeypadButtons { get; set; }
-        public DbSet<LockButton> LockButtons { get; set; }
         
         public DbSet<Switch> Switches { get; set; }
 
@@ -34,16 +32,6 @@ namespace GamebookPilar.Server.Data
                 .HasMany(l => l.MoveButtons)
                 .WithOne(m => m.Location)
                 .HasForeignKey(m => m.LocationId);
-
-            modelBuilder.Entity<Location>()
-                .HasMany(l => l.KeypadButtons)
-                .WithOne(k => k.Location)
-                .HasForeignKey(k => k.LocationId);
-
-            modelBuilder.Entity<Location>()
-                .HasMany(l => l.LockButtons)
-                .WithOne(lk => lk.Location)
-                .HasForeignKey(lk => lk.LocationId);
 
             modelBuilder.Entity<Location>()
                 .HasMany(l => l.Switches)

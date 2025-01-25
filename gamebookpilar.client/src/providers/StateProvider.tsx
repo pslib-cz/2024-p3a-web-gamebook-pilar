@@ -1,4 +1,5 @@
 import {FC, PropsWithChildren, useState, createContext} from "react"
+import pako from "pako"
 
 interface State {
     currentLocation: number, // the location that the player is currently in
@@ -28,7 +29,7 @@ function binToNum(binaryStr: string): number {
 // encodes playerState, gameState and inventory in a single binary string
 function stateToBin(state: State): string {
     let rtn = "";
-    rtn = rtn + numToBin(state.currentLocation, 6);
+    rtn = rtn + numToBin(state.currentLocation, 8);
     rtn = rtn + numToBin(state.sanity, 3);
     rtn = rtn + state.cigarettesTaken; // 10 bits
     rtn = rtn + state.candlesTaken; // 5 bits
@@ -43,8 +44,8 @@ function stateToBin(state: State): string {
 function binToState(bin: string): State {
     let index = 0;
 
-    const currentLocation = binToNum(bin.slice(index, index + 6));
-    index += 6;
+    const currentLocation = binToNum(bin.slice(index, index + 8));
+    index += 8;
 
     const sanity = binToNum(bin.slice(index, index + 3));
     index += 3;

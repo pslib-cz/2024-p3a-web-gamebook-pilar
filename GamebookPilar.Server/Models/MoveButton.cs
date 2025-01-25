@@ -8,6 +8,8 @@ public class MoveButton
     public int LocationX { get; set; }
     public int LocationY { get; set; }
     public string Label { get; set; }
+    public string? Pin { get; set; }
+    public int? KeyIndex { get; set; }
     public int TargetLocationId { get; set; }
     
     public int LocationId { get; set; }

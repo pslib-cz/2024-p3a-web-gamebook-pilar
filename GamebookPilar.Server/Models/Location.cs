@@ -11,8 +11,6 @@ public class Location
     public bool IsLit { get; set; }
     
     public ICollection<MoveButton> MoveButtons { get; set; }
-    public ICollection<KeypadButton> KeypadButtons { get; set; }
-    public ICollection<LockButton> LockButtons { get; set; }
     public ICollection<Background> Backgrounds { get; set; }
     public ICollection<Switch> Switches { get; set; }
     public ICollection<Frame> Frames { get; set; }

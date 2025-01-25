@@ -10,26 +10,8 @@ interface MoveButton {
     label: string,
     locationX: number,
     locationY: number,
-    targetLocationId: number,
-    locationId: number //FK
-}
-
-interface KeypadButton {
-    moveButtonId: number, //PK
-    label: string,
-    locationX: number,
-    locationY: number,
-    pin: string,
-    targetLocationId: number,
-    locationId: number //FK
-}
-
-interface LockButton {
-    moveButtonId: number, //PK
-    label: string,
-    locationX: number,
-    locationY: number,
     keyIndex: number,
+    pin: string,
     targetLocationId: number,
     locationId: number //FK
 }
@@ -59,8 +41,6 @@ interface Location {
     switchIndex: number | undefined,
     cutsceneIndex: number | undefined,
     moveButtons: MoveButton[],
-    keypadButtons: KeypadButton[],
-    lockButtons: LockButton[],
     backgrounds: Background[],
     switches: Switch[],
     isLit: boolean
@@ -88,7 +68,9 @@ function Game() {
 
     const [currentLocation, setCurrentLocation] = useState<Location>();
 
-    const [backgroundImageUrl, setBackgroundImageUrl] = useState<String>();
+    const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>();
+
+    const [statusImageUrl, setStatusImageUrl] = useState<string>();
 
     useEffect(() => {
         (async () => {
@@ -122,28 +104,41 @@ function Game() {
         })();
     }, [receivedGameKey]);
 
+    useEffect(() => {
+        (async () => {
+            try {
+                const response = await fetch(`${SERVER_URL}/api/status/${state.sanity}`);
+                const jsonData = await response.json();
+                setStatusImageUrl(jsonData.imageUrl);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        })();
+    }, [state]);
+
     const findItem = () => {
         if (state.sanity > 1 && !isLocationLit(currentLocation)) {
             state.sanity -= 1;
         }
-        if (currentLocation) {
-            if (currentLocation.itemIndex != undefined) {
-                switch (currentLocation.containedItem) {
-                    case 0:
-                        state.cigarettesTaken = state.cigarettesTaken.substring(0, currentLocation.itemIndex) + "1" + state.cigarettesTaken.substring(currentLocation.itemIndex + 1);
-                        break;
-                    case 1:
-                        state.candlesTaken = state.candlesTaken.substring(0, currentLocation.itemIndex) + "1" + state.candlesTaken.substring(currentLocation.itemIndex + 1);
-                        break;
-                    case 2:
-                        state.pagesTaken = state.pagesTaken.substring(0, currentLocation.itemIndex) + "1" + state.pagesTaken.substring(currentLocation.itemIndex + 1);
-                        break;
-                    case 3:
-                        state.keysTaken = state.keysTaken.substring(0, currentLocation.itemIndex) + "1" + state.keysTaken.substring(currentLocation.itemIndex + 1);
-                        break;
-                    default:
-                        break;
-                }
+        if (currentLocation && currentLocation.itemIndex !== undefined) {
+            const updateItemState = (itemState: string, itemIndex: number) => 
+                itemState.substring(0, itemIndex) + "1" + itemState.substring(itemIndex + 1);
+
+            switch (currentLocation.containedItem) {
+                case 0:
+                    state.cigarettesTaken = updateItemState(state.cigarettesTaken, currentLocation.itemIndex);
+                    break;
+                case 1:
+                    state.candlesTaken = updateItemState(state.candlesTaken, currentLocation.itemIndex);
+                    break;
+                case 2:
+                    state.pagesTaken = updateItemState(state.pagesTaken, currentLocation.itemIndex);
+                    break;
+                case 3:
+                    state.keysTaken = updateItemState(state.keysTaken, currentLocation.itemIndex);
+                    break;
+                default:
+                    break;
             }
             nav(`/game/${encode(state)}`);
         }
@@ -223,7 +218,7 @@ function Game() {
             <div className={s.hud}>
                 <div className={s.player}>
                     <div className={s.status}>
-                        <img src={ `${SERVER_URL}/Images/statuses/${state.sanity}.png` } alt="" />
+                        <img src={ `${SERVER_URL}/Images/${statusImageUrl}` } alt="" />
                     </div>
                     <div className={s.info}>
                         <div className={s.monologue}>
@@ -247,17 +242,17 @@ function Game() {
                 </div>
             </div>
             {checkItemPresence(currentLocation) ? <button className={s.action} style={{left: `45%`, top: `75%`}} onClick={() => {findItem()}}> search room </button>:null}
-            {currentLocation?.moveButtons.map((moveButton:MoveButton) => (
-                <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.targetLocationId)}}> {moveButton.label} </button>
-            ))}
-            {currentLocation?.keypadButtons.map((keypadButton:KeypadButton) => (
-                <button className={s.action} style={{left: `${keypadButton.locationX - 5}%`, top: `${keypadButton.locationY}%`}} onClick={() => {doMinigameAction(keypadButton.pin, keypadButton.targetLocationId)}}> {keypadButton.label} </button>
-            ))}
-            {currentLocation?.lockButtons.map((lockButton: LockButton) => {
-                if (state.keysTaken[lockButton.keyIndex] == "1") {
-                    return <button className={s.action} style={{left: `${lockButton.locationX - 5}%`, top: `${lockButton.locationY}%`}} onClick={() => {doMoveAction(lockButton.targetLocationId)}}> {lockButton.label} </button>;
+            {currentLocation?.moveButtons.map((moveButton:MoveButton) => {
+                if (moveButton.pin != null) {
+                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMinigameAction(moveButton.pin, moveButton.targetLocationId)}}> {moveButton.label} </button>
+                } else if (moveButton.keyIndex != null) {
+                    if (state.keysTaken[moveButton.keyIndex] == "1") {
+                        return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.targetLocationId)}}> {moveButton.label} </button>;
+                    } else {
+                        return null;
+                    }
                 } else {
-                    return null;
+                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.targetLocationId)}}> {moveButton.label} </button>
                 }
             })}
             {currentLocation?.switches.map((sswitch:Switch) => {
@@ -266,7 +261,6 @@ function Game() {
                 } else {
                     return null;
                 }
-                
             })}
         </div>
     );
