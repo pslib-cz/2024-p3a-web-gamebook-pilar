@@ -1,5 +1,4 @@
 import {FC, PropsWithChildren, useState, createContext} from "react"
-import pako from "pako"
 
 interface State {
     currentLocation: number, // the location that the player is currently in
@@ -36,7 +35,7 @@ function stateToBin(state: State): string {
     rtn = rtn + state.pagesTaken; // 3 bits
     rtn = rtn + state.keysTaken; // 9 bits
     rtn = rtn + state.switchesFlipped; // 9 bits
-    rtn = rtn + numToBin(state.cigarettesSmoked, 4); // 4 bits
+    rtn = rtn + numToBin(state.cigarettesSmoked, 4); // 4 bits 
     return rtn;
 }
 
