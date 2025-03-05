@@ -7,6 +7,7 @@ import Game from './app/Game'
 import Index from './app/Index'
 import Minigame from './app/Minigame'
 import { useEffect, useRef } from 'react'
+import About from './app/About'
 
 function App() {
   const canvasRef = useRef(0);
@@ -15,6 +16,10 @@ function App() {
     {
       path: "/",
       element: <Index />,
+    },
+    {
+      path: "/about",
+      element: <About />,
     },
     {
       path: "/game",

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import { StateContext } from '../providers/StateProvider';
 import s from './Game.module.css';
@@ -12,6 +12,8 @@ interface MoveButton {
     locationY: number,
     keyIndex: number,
     pin: string,
+    isCandle: boolean,
+    isPage: boolean,
     targetLocationId: number,
     locationId: number //FK
 }
@@ -39,7 +41,7 @@ interface Location {
     containedItem: number | undefined,
     itemIndex: number | undefined,
     switchIndex: number | undefined,
-    cutsceneIndex: number | undefined,
+    isCutscene: boolean,
     moveButtons: MoveButton[],
     backgrounds: Background[],
     switches: Switch[],
@@ -63,14 +65,30 @@ function Game() {
     let nav = useNavigate();
 
     let gameKey = updateGameKey(receivedGameKey);
-    const [state, setState] = useState<State>(decode(gameKey));
-    
 
-    const [currentLocation, setCurrentLocation] = useState<Location>();
+    const initialState = {
+        gameState: decode(gameKey),
+        currentLocation: undefined,
+        backgroundImageUrl: undefined,
+        statusImageUrl: undefined
+    };
 
-    const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>();
+    function reducer(state: any, action: any) {
+        switch (action.type) {
+            case 'SET_STATE':
+                return { ...state, gameState: action.payload };
+            case 'SET_CURRENT_LOCATION':
+                return { ...state, currentLocation: action.payload };
+            case 'SET_BACKGROUND_IMAGE_URL':
+                return { ...state, backgroundImageUrl: action.payload };
+            case 'SET_STATUS_IMAGE_URL':
+                return { ...state, statusImageUrl: action.payload };
+            default:
+                return state;
+        }
+    }
 
-    const [statusImageUrl, setStatusImageUrl] = useState<string>();
+    const [state, dispatch] = useReducer(reducer, initialState);
 
     useEffect(() => {
         (async () => {
@@ -80,76 +98,48 @@ function Game() {
                 const response = await fetch(`${SERVER_URL}/api/location/${newState.currentLocation}`);
                 const jsonData:Location = await response.json();
                 
-                if (isLocationLit(jsonData)) {
-                    newState.sanity = 5;
-                } else {
-                    if (newState.sanity < 1) {
-                        console.log("game over");
-                    }
-                }
-                setCurrentLocation(jsonData);
+                dispatch({ type: 'SET_CURRENT_LOCATION', payload: jsonData });
+                console.log(state.currentLocation)
 
-                let hasItem = checkItemPresence(jsonData);
+                handleStatus(newState);
+
+                let hasItem = checkItemPresence(newState, jsonData);
                 let resultBackground = jsonData.backgrounds[0];
                 for (const background of jsonData.backgrounds) {
                     if (background.hasItem == hasItem && background.isLit == isLocationLit(jsonData)) {
                         resultBackground = background;
                     }
                 }
-                setBackgroundImageUrl(resultBackground.imageUrl);
+                dispatch({ type: 'SET_BACKGROUND_IMAGE_URL', payload: resultBackground.imageUrl });
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
-            setState(newState);
+            dispatch({ type: 'SET_STATE', payload: newState });
         })();
     }, [receivedGameKey]);
 
-    useEffect(() => {
-        (async () => {
+    const handleTransition = () => {
+        const bodyElement = document.querySelector(`.${s.body}`);
+        bodyElement?.classList.add(s.transition);
+        setTimeout(() => {
+            bodyElement?.classList.remove(s.transition);
+        }, 500);
+    };
+
+    const handleStatus = async (state:State) => {
             try {
                 const response = await fetch(`${SERVER_URL}/api/status/${state.sanity}`);
                 const jsonData = await response.json();
-                setStatusImageUrl(jsonData.imageUrl);
+                dispatch({ type: 'SET_STATUS_IMAGE_URL', payload: jsonData.imageUrl });
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
-        })();
-    }, [state]);
-
-    const findItem = () => {
-        if (state.sanity > 1 && !isLocationLit(currentLocation)) {
-            state.sanity -= 1;
-        }
-        if (currentLocation && currentLocation.itemIndex !== undefined) {
-            const updateItemState = (itemState: string, itemIndex: number) => 
-                itemState.substring(0, itemIndex) + "1" + itemState.substring(itemIndex + 1);
-
-            switch (currentLocation.containedItem) {
-                case 0:
-                    state.cigarettesTaken = updateItemState(state.cigarettesTaken, currentLocation.itemIndex);
-                    break;
-                case 1:
-                    state.candlesTaken = updateItemState(state.candlesTaken, currentLocation.itemIndex);
-                    break;
-                case 2:
-                    state.pagesTaken = updateItemState(state.pagesTaken, currentLocation.itemIndex);
-                    break;
-                case 3:
-                    state.keysTaken = updateItemState(state.keysTaken, currentLocation.itemIndex);
-                    break;
-                default:
-                    break;
-            }
-            nav(`/game/${encode(state)}`);
-        }
     }
 
     const isLocationLit = (location?: Location) => {
         if (location) {
-            console.log("switchIndex", location.switchIndex)
             if (location.switchIndex != undefined) {
-                console.log("AAA")
-                return state.switchesFlipped[location?.switchIndex] == "1";
+                return state.gameState.switchesFlipped[location?.switchIndex] == "1";
             } else {
                 return location?.isLit;
             }
@@ -158,36 +148,21 @@ function Game() {
         }
     }
 
-    const doMinigameAction = (code:string, targetLocationId:number) => {
-        localStorage.setItem("mg-targetCode", code);
-        state.sanity -= 1;
-        localStorage.setItem("mg-sourceRoom", encode(state));
-        state.currentLocation = targetLocationId;
-        localStorage.setItem("mg-targetRoom", encode(state));
-        nav("/minigame");
-    }
-
-    const doMoveAction = (targetLocationId:number) => {
-        state.currentLocation = targetLocationId;
-        state.sanity -= 1;
-        nav(`/game/${encode(state)}`);
-    }
-
-    const checkItemPresence = (location?:Location) => {
+    const checkItemPresence = (gameState:State, location?:Location) => {
         if (location) {
             if (location.itemIndex != undefined) {
                 switch (location.containedItem) {
                     case 0:
-                        return state.cigarettesTaken[location.itemIndex] == "0"
+                        return gameState.cigarettesTaken[location.itemIndex] == "0"
     
                     case 1:
-                        return state.candlesTaken[location.itemIndex] == "0"
+                        return gameState.candlesTaken[location.itemIndex] == "0"
     
                     case 2:
-                        return state.pagesTaken[location.itemIndex] == "0"
+                        return gameState.pagesTaken[location.itemIndex] == "0"
     
                     case 3:
-                        return state.keysTaken[location.itemIndex] == "0"
+                        return gameState.keysTaken[location.itemIndex] == "0"
                     default:
                         break;
                     }
@@ -196,68 +171,106 @@ function Game() {
         return false;
     }
 
-    const smokeCigarette = () => {
-        let currentCigarettes = (state.cigarettesTaken.match(new RegExp("1", "g")) || []).length - state.cigarettesSmoked;
-        if (currentCigarettes > 0 && state.sanity < 5) {
-            state.sanity = 5;
-            state.cigarettesSmoked += 1;
-            setState(state);
-            nav(`/game/${encode(state)}`);
-        }
+    const doMinigameAction = (code:string, targetLocationId:number) => {
+        localStorage.setItem("mg-targetCode", code);
+        state.gameState.sanity -= 1;
+        localStorage.setItem("mg-sourceRoom", encode(state.gameState));
+        state.gameState.currentLocation = targetLocationId;
+        localStorage.setItem("mg-targetRoom", encode(state.gameState));
+        handleTransition();
+        nav("/minigame");
     }
 
-    const flipSwitch = (switchIndex:number) => {
-        state.switchesFlipped = state.switchesFlipped.substring(0, switchIndex) + "1" + state.switchesFlipped.substring(switchIndex + 1);
-        setState(state);
-        nav(`/game/${encode(state)}`);
+    const doMoveAction = async (moveButtonId:number) => {
+        const response = await fetch(`${SERVER_URL}/api/state/move/${encode(state.gameState)}/${moveButtonId}`);
+        const jsonData = await response.json();
+        handleTransition();
+        setTimeout(() => {
+            nav(`/game/${jsonData}`);
+        }, 250);
+    }
 
+    const findItem = async () => {
+        const response = await fetch(`${SERVER_URL}/api/state/search/${encode(state.gameState)}/`);
+        const jsonData = await response.json();
+        nav(`/game/${jsonData}`);
+    }
+
+    const smokeCigarette = async () => {
+        const response = await fetch(`${SERVER_URL}/api/state/smoke/${encode(state.gameState)}/`);
+        const jsonData = await response.json();
+        nav(`/game/${jsonData}`);
+    }
+
+    const flipSwitch = async (switchId:number) => {
+        const response = await fetch(`${SERVER_URL}/api/state/switch/${encode(state.gameState)}/${switchId}`);
+        const jsonData = await response.json();
+        nav(`/game/${jsonData}`);
     }
 
     return (
-        <div className={s.body} style={{backgroundImage: `url(${SERVER_URL}/Images/${backgroundImageUrl})`}}>
-            <div className={s.hud}>
-                <div className={s.player}>
-                    <div className={s.status}>
-                        <img src={ `${SERVER_URL}/Images/${statusImageUrl}` } alt="" />
+        <div className={s.body}>
+            <div className={s.background} style={{backgroundImage: `url(${SERVER_URL}/Images/${state.backgroundImageUrl})`}}></div>
+            {(!state.currentLocation?.isCutscene) && (
+                <div className={s.hud}>
+                    <div className={s.player}>
+                        <div className={s.status}>
+                            <img src={`${SERVER_URL}/Images/${state.statusImageUrl}`} alt="Player status" />
+                        </div>
+                        <div className={s.info}>
+                            <div className={s.monologue}>
+                                <p>{state.currentLocation?.monologue}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div className={s.info}>
-                        <div className={s.monologue}>
-                            <p>{currentLocation?.monologue}</p>
+                    <div className={s.inventory}>
+                        <button className={s.item} onClick={smokeCigarette}>
+                            <p className={s.itemLabel}>
+                                {(state.gameState.cigarettesTaken.match(/1/g) || []).length - state.gameState.cigarettesSmoked}
+                            </p>
+                            <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/cigarette.png`} alt="Cigarette" />
+                        </button>
+                        <div className={s.item}>
+                            <p className={s.itemLabel}>
+                                {(state.gameState.candlesTaken.match(/1/g) || []).length}
+                            </p>
+                            <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/candle.png`} alt="Candle" />
+                        </div>
+                        <div className={s.item}>
+                            <p className={s.itemLabel}>
+                                {(state.gameState.pagesTaken.match(/1/g) || []).length}
+                            </p>
+                            <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/page.png`} alt="Page" />
                         </div>
                     </div>
                 </div>
-                <div className={s.inventory}>
-                    <button className={s.item} onClick={smokeCigarette}>
-                        <p className={s.itemLabel}>{(state.cigarettesTaken.match(new RegExp("1", "g")) || []).length - state.cigarettesSmoked}</p>
-                        <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/cigarette.png`} alt="" />
-                    </button>
-                    <div className={s.item}>
-                        <p className={s.itemLabel}>{(state.candlesTaken.match(new RegExp("1", "g")) || []).length}</p>
-                        <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/candle.png`} alt="" />
-                    </div>
-                    <div className={s.item}>
-                        <p className={s.itemLabel}>{(state.pagesTaken.match(new RegExp("1", "g")) || []).length}</p>
-                        <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/page.png`} alt="" />
-                    </div>
+            )}
+            {(state.currentLocation?.isCutscene) && (
+                <div className={s.cutsceneMonologue}>
+                    <p>{state.currentLocation.monologue}</p>
                 </div>
-            </div>
-            {checkItemPresence(currentLocation) ? <button className={s.action} style={{left: `45%`, top: `75%`}} onClick={() => {findItem()}}> search room </button>:null}
-            {currentLocation?.moveButtons.map((moveButton:MoveButton) => {
-                if (moveButton.pin != null) {
+            )}
+            {checkItemPresence(state.gameState, state.currentLocation) ? <button className={s.action} style={{left: `45%`, top: `75%`}} onClick={() => {findItem()}}> search room </button>:null}
+            {state.currentLocation?.moveButtons.map((moveButton:MoveButton) => {
+                if (moveButton.isCandle && state.gameState.candlesTaken == "11111") {
+                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.moveButtonId)}}> {moveButton.label} </button>
+                } else if (moveButton.isPage && state.gameState.pagesTaken == "111") {
+                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.moveButtonId)}}> {moveButton.label} </button>
+                } else if (moveButton.pin != null) {
                     return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMinigameAction(moveButton.pin, moveButton.targetLocationId)}}> {moveButton.label} </button>
                 } else if (moveButton.keyIndex != null) {
-                    if (state.keysTaken[moveButton.keyIndex] == "1") {
-                        return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.targetLocationId)}}> {moveButton.label} </button>;
+                    if (state.gameState.keysTaken[moveButton.keyIndex] == "1") {
+                        return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.moveButtonId)}}> {moveButton.label} </button>;
                     } else {
                         return null;
                     }
                 } else {
-                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.targetLocationId)}}> {moveButton.label} </button>
+                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.moveButtonId)}}> {moveButton.label} </button>
                 }
             })}
-            {currentLocation?.switches.map((sswitch:Switch) => {
-                if (state.switchesFlipped[sswitch.switchIndex] == "0") {
-                    return <button className={s.action} style={{left: `${sswitch.locationX - 5}%`, top: `${sswitch.locationY}%`}} onClick={() => {flipSwitch(sswitch.switchIndex)}}> flip switch </button>;
+            {state.currentLocation?.switches.map((sswitch:Switch) => {
+                if (state.gameState.switchesFlipped[sswitch.switchIndex] == "0") {
+                    return <button className={s.action} style={{left: `${sswitch.locationX - 5}%`, top: `${sswitch.locationY}%`}} onClick={() => {flipSwitch(sswitch.switchId)}}> flip switch </button>;
                 } else {
                     return null;
                 }

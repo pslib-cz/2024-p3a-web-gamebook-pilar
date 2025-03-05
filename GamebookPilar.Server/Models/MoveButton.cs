@@ -10,6 +10,9 @@ public class MoveButton
     public string Label { get; set; }
     public string? Pin { get; set; }
     public int? KeyIndex { get; set; }
+    public bool IsCandle { get; set; }
+    public bool IsPage { get; set; }
+    public bool StaminaFree { get; set; }
     public int TargetLocationId { get; set; }
     
     public int LocationId { get; set; }

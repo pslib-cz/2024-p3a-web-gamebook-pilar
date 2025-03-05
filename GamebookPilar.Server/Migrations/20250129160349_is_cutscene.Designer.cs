@@ -3,6 +3,7 @@ using System;
 using GamebookPilar.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GamebookPilar.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250129160349_is_cutscene")]
+    partial class is_cutscene
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.11");
@@ -41,6 +44,33 @@ namespace GamebookPilar.Server.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("Backgrounds");
+                });
+
+            modelBuilder.Entity("GamebookPilar.Server.Models.Frame", b =>
+                {
+                    b.Property<int>("FrameId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("FrameIndex")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Monologue")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("FrameId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("Frames");
                 });
 
             modelBuilder.Entity("GamebookPilar.Server.Models.Location", b =>
@@ -83,12 +113,6 @@ namespace GamebookPilar.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsCandle")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsPage")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("KeyIndex")
                         .HasColumnType("INTEGER");
 
@@ -107,9 +131,6 @@ namespace GamebookPilar.Server.Migrations
 
                     b.Property<string>("Pin")
                         .HasColumnType("TEXT");
-
-                    b.Property<bool>("StaminaFree")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("TargetLocationId")
                         .HasColumnType("INTEGER");
@@ -178,6 +199,17 @@ namespace GamebookPilar.Server.Migrations
                     b.Navigation("Location");
                 });
 
+            modelBuilder.Entity("GamebookPilar.Server.Models.Frame", b =>
+                {
+                    b.HasOne("GamebookPilar.Server.Models.Location", "Location")
+                        .WithMany("Frames")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+                });
+
             modelBuilder.Entity("GamebookPilar.Server.Models.MoveButton", b =>
                 {
                     b.HasOne("GamebookPilar.Server.Models.Location", "Location")
@@ -203,6 +235,8 @@ namespace GamebookPilar.Server.Migrations
             modelBuilder.Entity("GamebookPilar.Server.Models.Location", b =>
                 {
                     b.Navigation("Backgrounds");
+
+                    b.Navigation("Frames");
 
                     b.Navigation("MoveButtons");
 

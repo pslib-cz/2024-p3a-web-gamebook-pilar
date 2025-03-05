@@ -1,0 +1,40 @@
+.main {
+    height: 100%;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 2rem;
+    gap: 2rem;
+}
+
+.main h1 {
+    font-size: 6rem;
+}
+
+.main button {
+    font-size: 2rem;
+    border: none;
+    background: none;
+    align-self: flex-start;
+    transform-origin: left center;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.main button:hover {
+    transform: scale(1.2);
+}
+
+.load input {
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    align-self: flex-start;
+    background: none;
+    transition: margin 0.2s ease;
+}
+
+.load button:hover + input {
+    margin-left: 3rem;
+}

@@ -1,4 +1,4 @@
-import {FC, PropsWithChildren, useState, createContext} from "react"
+import {FC, PropsWithChildren, createContext} from "react"
 
 interface State {
     currentLocation: number, // the location that the player is currently in
@@ -35,13 +35,13 @@ function stateToBin(state: State): string {
     rtn = rtn + state.pagesTaken; // 3 bits
     rtn = rtn + state.keysTaken; // 9 bits
     rtn = rtn + state.switchesFlipped; // 9 bits
-    rtn = rtn + numToBin(state.cigarettesSmoked, 4); // 4 bits 
+    rtn = rtn + numToBin(state.cigarettesSmoked, 4); // 4 bits
     return rtn;
 }
 
 // decodes a binary string back into the playerState, gameState, and inventory
 function binToState(bin: string): State {
-    let index = 0;
+    let index = 5;
 
     const currentLocation = binToNum(bin.slice(index, index + 8));
     index += 8;
@@ -49,8 +49,8 @@ function binToState(bin: string): State {
     const sanity = binToNum(bin.slice(index, index + 3));
     index += 3;
 
-    const cigarettesTaken = bin.slice(index, index + 9);
-    index += 9;
+    const cigarettesTaken = bin.slice(index, index + 10);
+    index += 10;
 
     const candlesTaken = bin.slice(index, index + 5);
     index += 5;
@@ -112,24 +112,20 @@ function base64ToBinary(base64Str: string): string {
 // encodes the state to Base64, leaving the length of the binary string after the +
 function encode(state: State): string {
     let bin = stateToBin(state);
-    return binaryToBase64(bin) + "+" + bin.length;
+    return binaryToBase64(bin);
 }
 
 // decodes the state from Base64, matching the binary string from the length after the +
 function decode(text: string): State {
-    let bin = base64ToBinary(text.split("+")[0]);
-    let binLength = parseInt(text.split("+")[1]);
-    while (binLength != bin.length) {
-        bin = bin.substring(1);
-    }
+    let bin = base64ToBinary(text);
     return binToState(bin);
 }
 
 function updateGameKey(newString: string | undefined) : string {
     let gameKey: string = encode({
-        "currentLocation": 1,
+        "currentLocation": 200,
         "sanity": 5,
-        "cigarettesTaken": "000000000",
+        "cigarettesTaken": "0000000000",
         "candlesTaken": "00000",
         "pagesTaken": "000",
         "keysTaken": "000000000",
@@ -159,9 +155,9 @@ export const StateContext = createContext<TStateContext>(
         updateGameKey: (k: string | undefined) => "",
         encode: (s: State) => "",
         decode: (s: string) => ({
-            "currentLocation": 0,
+            "currentLocation": 1,
             "sanity": 5,
-            "cigarettesTaken": "000000000",
+            "cigarettesTaken": "0000000000",
             "candlesTaken": "00000",
             "pagesTaken": "000",
             "keysTaken": "000000000",

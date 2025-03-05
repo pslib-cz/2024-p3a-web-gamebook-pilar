@@ -7,11 +7,10 @@ public class Location
     public int? ContainedItem { get; set; } // null is nothing, 0 is cigarettes, 1 is flare, 2 is candle, 3 is page, 4 is key
     public int? ItemIndex { get; set; }
     public int? SwitchIndex { get; set; }
-    public int? CutsceneIndex { get; set; }
+    public bool IsCutscene { get; set; }
     public bool IsLit { get; set; }
     
     public ICollection<MoveButton> MoveButtons { get; set; }
     public ICollection<Background> Backgrounds { get; set; }
     public ICollection<Switch> Switches { get; set; }
-    public ICollection<Frame> Frames { get; set; }
 }
