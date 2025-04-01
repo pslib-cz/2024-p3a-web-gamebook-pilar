@@ -31,7 +31,7 @@ function stateToBin(state: State): string {
     rtn = rtn + numToBin(state.currentLocation, 8);
     rtn = rtn + numToBin(state.sanity, 3);
     rtn = rtn + state.cigarettesTaken; // 10 bits
-    rtn = rtn + state.candlesTaken; // 5 bits
+    rtn = rtn + state.candlesTaken; // 3 bits
     rtn = rtn + state.pagesTaken; // 3 bits
     rtn = rtn + state.keysTaken; // 9 bits
     rtn = rtn + state.switchesFlipped; // 9 bits

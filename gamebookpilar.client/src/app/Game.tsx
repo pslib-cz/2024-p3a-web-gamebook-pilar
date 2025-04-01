@@ -68,6 +68,7 @@ function Game() {
 
     const initialState = {
         gameState: decode(gameKey),
+        gameKey: gameKey,
         currentLocation: undefined,
         backgroundImageUrl: undefined,
         statusImageUrl: undefined
@@ -77,6 +78,8 @@ function Game() {
         switch (action.type) {
             case 'SET_STATE':
                 return { ...state, gameState: action.payload };
+            case 'SET_GAMEKEY':
+                return { ...state, gameKey: action.payload };
             case 'SET_CURRENT_LOCATION':
                 return { ...state, currentLocation: action.payload };
             case 'SET_BACKGROUND_IMAGE_URL':
@@ -89,34 +92,6 @@ function Game() {
     }
 
     const [state, dispatch] = useReducer(reducer, initialState);
-
-    useEffect(() => {
-        (async () => {
-            gameKey = updateGameKey(receivedGameKey);
-            let newState = decode(gameKey);
-            try {
-                const response = await fetch(`${SERVER_URL}/api/location/${newState.currentLocation}`);
-                const jsonData:Location = await response.json();
-                
-                dispatch({ type: 'SET_CURRENT_LOCATION', payload: jsonData });
-                console.log(state.currentLocation)
-
-                handleStatus(newState);
-
-                let hasItem = checkItemPresence(newState, jsonData);
-                let resultBackground = jsonData.backgrounds[0];
-                for (const background of jsonData.backgrounds) {
-                    if (background.hasItem == hasItem && background.isLit == isLocationLit(jsonData)) {
-                        resultBackground = background;
-                    }
-                }
-                dispatch({ type: 'SET_BACKGROUND_IMAGE_URL', payload: resultBackground.imageUrl });
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-            dispatch({ type: 'SET_STATE', payload: newState });
-        })();
-    }, [receivedGameKey]);
 
     const handleTransition = () => {
         const bodyElement = document.querySelector(`.${s.body}`);
@@ -171,12 +146,9 @@ function Game() {
         return false;
     }
 
-    const doMinigameAction = (code:string, targetLocationId:number) => {
+    const doMinigameAction = (code:string, moveButtonId:number) => {
         localStorage.setItem("mg-targetCode", code);
-        state.gameState.sanity -= 1;
-        localStorage.setItem("mg-sourceRoom", encode(state.gameState));
-        state.gameState.currentLocation = targetLocationId;
-        localStorage.setItem("mg-targetRoom", encode(state.gameState));
+        localStorage.setItem("mg-targetButton", moveButtonId.toString())
         handleTransition();
         nav("/minigame");
     }
@@ -207,6 +179,36 @@ function Game() {
         const jsonData = await response.json();
         nav(`/game/${jsonData}`);
     }
+
+    useEffect(() => {
+        (async () => {
+            gameKey = updateGameKey(receivedGameKey);
+            let newState = decode(gameKey);
+            if (newState.sanity <= 0) {
+                nav(`/gameover`);
+            }
+            try {
+                const response = await fetch(`${SERVER_URL}/api/location/${newState.currentLocation}`);
+                const jsonData:Location = await response.json();
+                
+                dispatch({ type: 'SET_CURRENT_LOCATION', payload: jsonData });
+
+                handleStatus(newState);
+
+                let hasItem = checkItemPresence(newState, jsonData);
+                let resultBackground = jsonData.backgrounds[0];
+                for (const background of jsonData.backgrounds) {
+                    if (background.hasItem == hasItem && background.isLit == isLocationLit(jsonData)) {
+                        resultBackground = background;
+                    }
+                }
+                dispatch({ type: 'SET_BACKGROUND_IMAGE_URL', payload: resultBackground.imageUrl });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+            dispatch({ type: 'SET_STATE', payload: newState });
+        })();
+    }, [receivedGameKey]);
 
     return (
         <div className={s.body}>
@@ -252,12 +254,12 @@ function Game() {
             )}
             {checkItemPresence(state.gameState, state.currentLocation) ? <button className={s.action} style={{left: `45%`, top: `75%`}} onClick={() => {findItem()}}> search room </button>:null}
             {state.currentLocation?.moveButtons.map((moveButton:MoveButton) => {
-                if (moveButton.isCandle && state.gameState.candlesTaken == "11111") {
+                if (moveButton.isCandle && state.gameState.candlesTaken == "111") {
                     return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.moveButtonId)}}> {moveButton.label} </button>
                 } else if (moveButton.isPage && state.gameState.pagesTaken == "111") {
                     return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.moveButtonId)}}> {moveButton.label} </button>
                 } else if (moveButton.pin != null) {
-                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMinigameAction(moveButton.pin, moveButton.targetLocationId)}}> {moveButton.label} </button>
+                    return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMinigameAction(moveButton.pin, moveButton.moveButtonId)}}> {moveButton.label} </button>
                 } else if (moveButton.keyIndex != null) {
                     if (state.gameState.keysTaken[moveButton.keyIndex] == "1") {
                         return <button className={s.action} style={{left: `${moveButton.locationX - 5}%`, top: `${moveButton.locationY}%`}} onClick={() => {doMoveAction(moveButton.moveButtonId)}}> {moveButton.label} </button>;

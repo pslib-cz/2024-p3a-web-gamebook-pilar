@@ -3,6 +3,8 @@ import s from './Minigame.module.css';
 import { useNavigate } from 'react-router';
 import MGBox from '../components/MGBox';
 
+const SERVER_URL = "https://localhost:7014";
+
 interface PlayerState {
     currentLocation: number, // the location that the player is currently in
     sanity: number // sanity level of player (0 to 5)
@@ -30,11 +32,9 @@ interface State {
 function Minigame() {
     let nav = useNavigate();
 
-    let maybeTargetCode = localStorage.getItem("mg-targetCode");
-    let targetCode = maybeTargetCode ? maybeTargetCode : "7194"
+    let targetCode = localStorage.getItem("mg-targetCode") ?? "7194";
 
-    let sourceRoom = localStorage.getItem("mg-sourceRoom");
-    let targetRoom = localStorage.getItem("mg-targetRoom");
+    let targetButton = localStorage.getItem("mg-targetButton") ?? "0";
 
     const [pastCodes, setPastCodes] = useState([""]);
 
@@ -43,15 +43,32 @@ function Minigame() {
     const [code, setCode] = useState("");
     const [tries, setTries] = useState(0);
 
+    const handleTransition = () => {
+        const bodyElement = document.querySelector(`.${s.body}`);
+        bodyElement?.classList.add(s.transition);
+        setTimeout(() => {
+            bodyElement?.classList.remove(s.transition);
+        }, 500);
+    };
+    
+    const doMoveAction = async (moveButtonId:number) => {
+        const response = await fetch(`${SERVER_URL}/api/state/move/${localStorage.getItem("gameKey")}/${moveButtonId}`);
+        const jsonData = await response.json();
+        handleTransition();
+        setTimeout(() => {
+            nav(`/game/${jsonData}`);
+        }, 250);
+    }
+
     const changeCode = (num: string) => {
         if (num == "*") {
             setCode("");
         } else if (num == "#") {
             if (code.length == targetCode.length) {
                 if (code == targetCode) {
-                    nav(`/game/${targetRoom}`)
+                    doMoveAction(parseInt(targetButton));
                 } else if (tries >= 3) {
-                    nav(`/game/${sourceRoom}`);
+                    doMoveAction(0);
                 } else {
                     pastCodes.push(code);
                     setCode("");

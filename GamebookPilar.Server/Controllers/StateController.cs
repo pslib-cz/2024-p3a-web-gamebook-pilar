@@ -151,6 +151,12 @@ namespace GamebookPilar.Server.Controllers
         public async Task<ActionResult<string>> ExecMoveButton(string gameKey, int moveButtonId)
         {
             State decodedState = Encoder.Decode(gameKey);
+            if (moveButtonId == 0)
+            {
+                decodedState.Sanity -= 1;
+                gameKey = Encoder.Encode(decodedState);
+                return $"\"{gameKey}\"";
+            }
             var selectedMoveButton = await _context.MoveButtons.FindAsync(moveButtonId);
             if (selectedMoveButton != null)
             {

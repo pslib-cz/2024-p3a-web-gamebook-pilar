@@ -8,6 +8,7 @@ import Index from './app/Index'
 import Minigame from './app/Minigame'
 import { useEffect, useRef } from 'react'
 import About from './app/About'
+import Gameover from './app/Gameover'
 
 function App() {
   const canvasRef = useRef(0);
@@ -20,6 +21,10 @@ function App() {
     {
       path: "/about",
       element: <About />,
+    },
+    {
+      path: "/gameover",
+      element: <Gameover />,
     },
     {
       path: "/game",

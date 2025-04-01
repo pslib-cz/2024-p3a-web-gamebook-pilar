@@ -17,6 +17,10 @@ function Index() {
         nav(`/game/${gameKey}`);
     }
 
+    const newGame = () => {
+        nav(`/game/reset`);
+    }
+
     const loadGame = () => {
         if (showInput) {
             nav(`/game/${inputValue}`);
@@ -33,7 +37,8 @@ function Index() {
     return (
         <div className={s.main}>
             <h1>nyctophobia</h1>
-            <button onClick={playGame}>play</button>
+            <button onClick={playGame}>continue</button>
+            <button onClick={newGame}>new game</button>
             <div className={s.load}>
                 <button onClick={loadGame}>{showInput ? '> load' : 'save/load'}</button>
                 {showInput && (
