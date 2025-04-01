@@ -7,6 +7,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+RUN apt update
 RUN apt install -y nodejs npm
 COPY ["GamebookPilar.Server/GamebookPilar.Server.csproj", "GamebookPilar.Server/"]
 COPY ["gamebookpilar.client/gamebookpilar.client.esproj", "gamebookpilar.client/"]
