@@ -30,7 +30,7 @@ app.UseDefaultFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images")),
-    RequestPath = "/app/Images"
+    RequestPath = "Images"
 });
 
 // Configure the HTTP request pipeline.
