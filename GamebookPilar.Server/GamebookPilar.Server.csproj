@@ -32,10 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Images\cutscenes\start\" />
-    <Folder Include="Images\floor1\hallway\" />
-    <Folder Include="Images\floor2\" />
-    <Folder Include="Images\floor3\" />
+    <Folder Include="wwwroot\cutscenes\start\" />
+    <Folder Include="wwwroot\floor1\hallway\" />
+    <Folder Include="wwwroot\floor2\" />
+    <Folder Include="wwwroot\floor3\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 
