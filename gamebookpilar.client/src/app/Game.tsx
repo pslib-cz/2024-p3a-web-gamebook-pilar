@@ -212,12 +212,12 @@ function Game() {
 
     return (
         <div className={s.body}>
-            <div className={s.background} style={{backgroundImage: `url(${SERVER_URL}/Images/${state.backgroundImageUrl})`}}></div>
+            <div className={s.background} style={{backgroundImage: `url(${SERVER_URL}/data/Images/${state.backgroundImageUrl})`}}></div>
             {(!state.currentLocation?.isCutscene) && (
                 <div className={s.hud}>
                     <div className={s.player}>
                         <div className={s.status}>
-                            <img src={`${SERVER_URL}/Images/${state.statusImageUrl}`} alt="Player status" />
+                            <img src={`${SERVER_URL}/data/Images/${state.statusImageUrl}`} alt="Player status" />
                         </div>
                         <div className={s.info}>
                             <div className={s.monologue}>
@@ -230,19 +230,19 @@ function Game() {
                             <p className={s.itemLabel}>
                                 {(state.gameState.cigarettesTaken.match(/1/g) || []).length - state.gameState.cigarettesSmoked}
                             </p>
-                            <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/cigarette.png`} alt="Cigarette" />
+                            <img className={s.itemImage} src={`${SERVER_URL}/data/Images/inventory/cigarette.png`} alt="Cigarette" />
                         </button>
                         <div className={s.item}>
                             <p className={s.itemLabel}>
                                 {(state.gameState.candlesTaken.match(/1/g) || []).length}
                             </p>
-                            <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/candle.png`} alt="Candle" />
+                            <img className={s.itemImage} src={`${SERVER_URL}/data/Images/inventory/candle.png`} alt="Candle" />
                         </div>
                         <div className={s.item}>
                             <p className={s.itemLabel}>
                                 {(state.gameState.pagesTaken.match(/1/g) || []).length}
                             </p>
-                            <img className={s.itemImage} src={`${SERVER_URL}/Images/inventory/page.png`} alt="Page" />
+                            <img className={s.itemImage} src={`${SERVER_URL}/data/Images/inventory/page.png`} alt="Page" />
                         </div>
                     </div>
                 </div>
