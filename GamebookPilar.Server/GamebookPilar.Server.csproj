@@ -45,4 +45,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\AppDb.sqlite" />
+  </ItemGroup>
+
 </Project>

@@ -27,13 +27,9 @@ app.UseCors(x => x.AllowAnyMethod().SetIsOriginAllowed(origin => new Uri(origin)
 
 app.UseDefaultFiles();
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "/app/wwwroot")),
-    RequestPath = "/app/wwwroot"
-});
-
 // Configure the HTTP request pipeline.
+app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
