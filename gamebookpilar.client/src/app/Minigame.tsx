@@ -3,7 +3,7 @@ import s from './Minigame.module.css';
 import { useNavigate } from 'react-router';
 import MGBox from '../components/MGBox';
 
-const SERVER_URL = "https://localhost:7014";
+const SERVER_URL = "";
 
 interface PlayerState {
     currentLocation: number, // the location that the player is currently in
