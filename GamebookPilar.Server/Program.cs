@@ -12,7 +12,11 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.SetIsOriginAllowed(origin => new Uri(origin).IsLoopback);
+        builder.SetIsOriginAllowed(origin =>
+        {
+            var uri = new Uri(origin);
+            return uri.IsLoopback || uri.Host == "id-86.pslib.cloud";
+        });
     });
 });
 
