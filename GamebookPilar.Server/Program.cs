@@ -27,7 +27,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseCors(x => x.AllowAnyMethod().SetIsOriginAllowed(origin => new Uri(origin).IsLoopback));
+app.UseCors(x => x.AllowAnyMethod().SetIsOriginAllowed(origin =>
+{
+    var uri = new Uri(origin);
+    return uri.IsLoopback || uri.Host == "id-86.pslib.cloud";
+}));
 
 app.UseDefaultFiles();
 

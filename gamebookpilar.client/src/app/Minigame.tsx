@@ -54,9 +54,10 @@ function Minigame() {
     const doMoveAction = async (moveButtonId:number) => {
         const response = await fetch(`${SERVER_URL}/api/state/move/${localStorage.getItem("gameKey")}/${moveButtonId}`);
         const jsonData = await response.json();
+        localStorage.setItem("gameKey", jsonData);
         handleTransition();
         setTimeout(() => {
-            nav(`/game/${jsonData}`);
+            nav(`/game`);
         }, 250);
     }
 
